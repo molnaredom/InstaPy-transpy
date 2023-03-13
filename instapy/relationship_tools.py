@@ -1,4 +1,4 @@
-# import built-in & third-party modules
+﻿# import built-in & third-party modules
 import glob
 import json
 import os
@@ -1241,98 +1241,60 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
             entry
         )
 
-    if compare_by == "latest":
-        selected_filename = sorted_filenames[-1]
-
-    elif compare_by == "day":
-        latest_day = sorted_filenames[-1]
-        current_day = datetime.today().strftime("%d-%m-%Y")
-
-        if latest_day == current_day:
-            data_for_today = structured_entries["years"][this_year]["months"][
-                this_month
-            ]["days"][this_day]["entries"]
-
-            if compare_track == "first" or len(data_for_today) <= 1:
-                selected_filename = data_for_today[0]
-            if compare_track == "median":
-                median_index = int(len(data_for_today) / 2)
-                selected_filename = data_for_today[median_index]
-            if compare_track == "last":
-                selected_filename = data_for_today[-1]
-
-        else:
+    match compare_by:
+        case 'latest':
             selected_filename = sorted_filenames[-1]
-            logger.info(
-                "No any data exists for today!  ~choosing the last existing "
-                "data from {}".format(selected_filename)
-            )
-
-    elif compare_by == "month":
-        latest_month = sorted_filenames[-1][-7:]
-        current_month = datetime.today().strftime("%m-%Y")
-
-        if latest_month == current_month:
-            data_for_month = []
-
-            for day in structured_entries["years"][this_year]["months"][this_month][
-                "days"
-            ]:
-                data_for_month.extend(
-                    structured_entries["years"][this_year]["months"][this_month][
-                        "days"
-                    ][day]["entries"]
-                )
-
-            if compare_track == "first" or len(data_for_month) <= 1:
-                selected_filename = data_for_month[0]
-            if compare_track == "median":
-                median_index = int(len(data_for_month) / 2)
-                selected_filename = data_for_month[median_index]
-            if compare_track == "last":
-                selected_filename = data_for_month[-1]
-
-        else:
-            selected_filename = sorted_filenames[-1]
-            logger.info(
-                "No any data exists for this month!  ~choosing the last "
-                "existing data from {}".format(selected_filename)
-            )
-
-    elif compare_by == "year":
-        latest_year = sorted_filenames[-1][-4:]
-
-        if latest_year == this_year:
-            data_for_year = []
-
-            for month in structured_entries["years"][this_year]["months"]:
-                for day in structured_entries["years"][this_year]["months"][month][
-                    "days"
-                ]:
-                    data_for_year.extend(
-                        structured_entries["years"][this_year]["months"][month]["days"][
-                            day
-                        ]["entries"]
-                    )
-
-            if compare_track == "first" or len(data_for_year) <= 1:
-                selected_filename = data_for_year[0]
-            if compare_track == "median":
-                median_index = int(len(data_for_year) / 2)
-                selected_filename = data_for_year[median_index]
-            if compare_track == "last":
-                selected_filename = data_for_year[-1]
-
-        else:
-            selected_filename = sorted_filenames[-1]
-            logger.info(
-                "No any data exists for this year!  ~choosing the last existing data from {}".format(
-                    selected_filename
-                )
-            )
-
-    elif compare_by == "earliest":
-        selected_filename = sorted_filenames[0]
+        case 'day':
+            latest_day = sorted_filenames[-1]
+            current_day = datetime.today().strftime('%d-%m-%Y')
+            if latest_day == current_day:
+                data_for_today = structured_entries['years'][this_year]['months'][this_month]['days'][this_day]['entries']
+                if compare_track == 'first' or len(data_for_today) <= 1:
+                    selected_filename = data_for_today[0]
+                if compare_track == 'median':
+                    median_index = int(len(data_for_today) / 2)
+                    selected_filename = data_for_today[median_index]
+                if compare_track == 'last':
+                    selected_filename = data_for_today[-1]
+            else:
+                selected_filename = sorted_filenames[-1]
+                logger.info('No any data exists for today!  ~choosing the last existing data from {}'.format(selected_filename))
+        case 'month':
+            latest_month = sorted_filenames[-1][-7:]
+            current_month = datetime.today().strftime('%m-%Y')
+            if latest_month == current_month:
+                data_for_month = []
+                for day in structured_entries['years'][this_year]['months'][this_month]['days']:
+                    data_for_month.extend(structured_entries['years'][this_year]['months'][this_month]['days'][day]['entries'])
+                if compare_track == 'first' or len(data_for_month) <= 1:
+                    selected_filename = data_for_month[0]
+                if compare_track == 'median':
+                    median_index = int(len(data_for_month) / 2)
+                    selected_filename = data_for_month[median_index]
+                if compare_track == 'last':
+                    selected_filename = data_for_month[-1]
+            else:
+                selected_filename = sorted_filenames[-1]
+                logger.info('No any data exists for this month!  ~choosing the last existing data from {}'.format(selected_filename))
+        case 'year':
+            latest_year = sorted_filenames[-1][-4:]
+            if latest_year == this_year:
+                data_for_year = []
+                for month in structured_entries['years'][this_year]['months']:
+                    for day in structured_entries['years'][this_year]['months'][month]['days']:
+                        data_for_year.extend(structured_entries['years'][this_year]['months'][month]['days'][day]['entries'])
+                if compare_track == 'first' or len(data_for_year) <= 1:
+                    selected_filename = data_for_year[0]
+                if compare_track == 'median':
+                    median_index = int(len(data_for_year) / 2)
+                    selected_filename = data_for_year[median_index]
+                if compare_track == 'last':
+                    selected_filename = data_for_year[-1]
+            else:
+                selected_filename = sorted_filenames[-1]
+                logger.info('No any data exists for this year!  ~choosing the last existing data from {}'.format(selected_filename))
+        case 'earliest':
+            selected_filename = sorted_filenames[0]
 
     # load that file
     selected_file = (

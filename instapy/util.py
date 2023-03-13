@@ -1,4 +1,4 @@
-""" Common utilities """
+﻿""" Common utilities """
 # import built-in & third-party modules
 import csv
 import datetime
@@ -944,12 +944,13 @@ def delete_line_from_file(filepath, userToDelete, logger):
             for line in lines:
                 entries = line.split(" ~ ")
                 sz = len(entries)
-                if sz == 1:
-                    user = entries[0][:-2]
-                elif sz == 2:
-                    user = entries[1][:-2]
-                else:
-                    user = entries[1]
+                match sz:
+                    case 1:
+                        user = entries[0][:-2]
+                    case 2:
+                        user = entries[1][:-2]
+                    case _:
+                        user = entries[1]
 
                 if user == userToDelete:
                     slash_in_filepath = "/" if "/" in filepath else "\\"
@@ -1065,46 +1066,35 @@ def click_element(browser, element, tryNum=0):
         # click attempt failed
         # try something funky and try again
 
-        if tryNum == 0:
-            # try scrolling the element into view
-            try:
-                # This tends to fail because the script fails to get the element class
-                if element.get_attribute("class") != "":
-                    browser.execute_script(
-                        "document.getElementsByClassName('"
-                        + element.get_attribute("class")
-                        + "')[0].scrollIntoView({ inline: 'center' });"
-                    )
-            except Exception:
-                pass
-
-        elif tryNum == 1:
-            # well, that didn't work, try scrolling to the top and then
-            # clicking again
-            browser.execute_script("window.scrollTo(0,0);")
-
-        elif tryNum == 2:
-            # that didn't work either, try scrolling to the bottom and then
-            # clicking again
-            browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
-
-        else:
-            # try `execute_script` as a last resort
-            # print("attempting last ditch effort for click, `execute_script`")
-            try:
-                if element.get_attribute("class") != "":
-                    browser.execute_script(
-                        "document.getElementsByClassName('"
-                        + element.get_attribute("class")
-                        + "')[0].click()"
-                    )
-                    # update server calls after last click attempt by JS
-                    update_activity(browser, state=None)
-            except Exception:
-                print("Failed to click an element, giving up now")
-
-            # end condition for the recursive function
-            return
+        # PRESERVED COMMENTS: 
+         # try scrolling the element into view
+         # This tends to fail because the script fails to get the element class
+         # well, that didn't work, try scrolling to the top and then
+         # clicking again
+         # that didn't work either, try scrolling to the bottom and then
+         # clicking again
+         # try `execute_script` as a last resort
+         # print("attempting last ditch effort for click, `execute_script`")
+         # update server calls after last click attempt by JS
+        match tryNum:
+            case 0:
+                try:
+                    if element.get_attribute('class') != '':
+                        browser.execute_script("document.getElementsByClassName('" + element.get_attribute('class') + "')[0].scrollIntoView({ inline: 'center' });")
+                except Exception:
+                    pass
+            case 1:
+                browser.execute_script('window.scrollTo(0,0);')
+            case 2:
+                browser.execute_script('window.scrollTo(0,document.body.scrollHeight);')
+            case _:
+                try:
+                    if element.get_attribute('class') != '':
+                        browser.execute_script("document.getElementsByClassName('" + element.get_attribute('class') + "')[0].click()")
+                        update_activity(browser, state=None)
+                except Exception:
+                    print('Failed to click an element, giving up now')
+                return
 
         # update server calls after the scroll(s) in 0, 1 and 2 attempts
         update_activity(browser, state=None)
@@ -1411,23 +1401,22 @@ def highlight_print(
     if upper_char and (show_logs or priority == "workspace"):
         print("{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
 
-    if level == "info":
-        if logger:
-            logger.info(message)
-        else:
-            print(message)
-
-    elif level == "warning":
-        if logger:
-            logger.warning(message)
-        else:
-            print(message)
-
-    elif level == "critical":
-        if logger:
-            logger.critical(message)
-        else:
-            print(message)
+    match level:
+        case 'info':
+            if logger:
+                logger.info(message)
+            else:
+                print(message)
+        case 'warning':
+            if logger:
+                logger.warning(message)
+            else:
+                print(message)
+        case 'critical':
+            if logger:
+                logger.critical(message)
+            else:
+                print(message)
 
     if lower_char and (show_logs or priority == "workspace"):
         print("{}".format(lower_char * int(ceil(output_len / len(lower_char)))))
@@ -1809,37 +1798,24 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     condition = None
     ec_name = None
 
-    if track == "VOEL":
-        elem_address, find_method = ec_params
-        ec_name = "visibility of element located"
-
-        find_by = (
-            By.XPATH
-            if find_method == "XPath"
-            else By.CSS_SELECTOR
-            if find_method == "CSS"
-            else By.CLASS_NAME
-        )
-        locator = (find_by, elem_address)
-        condition = ec.visibility_of_element_located(locator)
-
-    elif track == "TC":
-        expect_in_title = ec_params[0]
-        ec_name = "title contains '{}' string".format(expect_in_title)
-
-        condition = ec.title_contains(expect_in_title)
-
-    elif track == "PFL":
-        ec_name = "page fully loaded"
-        condition = lambda browser: browser.execute_script(
-            "return document.readyState"
-        ) in ["complete" or "loaded"]
-
-    elif track == "SO":
-        ec_name = "staleness of"
-        element = ec_params[0]
-
-        condition = ec.staleness_of(element)
+    match track:
+        case 'VOEL':
+            elem_address, find_method = ec_params
+            ec_name = 'visibility of element located'
+            find_by = By.XPATH if find_method == 'XPath' else By.CSS_SELECTOR if find_method == 'CSS' else By.CLASS_NAME
+            locator = (find_by, elem_address)
+            condition = ec.visibility_of_element_located(locator)
+        case 'TC':
+            expect_in_title = ec_params[0]
+            ec_name = "title contains '{}' string".format(expect_in_title)
+            condition = ec.title_contains(expect_in_title)
+        case 'PFL':
+            ec_name = 'page fully loaded'
+            condition = lambda browser: browser.execute_script('return document.readyState') in ['complete' or 'loaded']
+        case 'SO':
+            ec_name = 'staleness of'
+            element = ec_params[0]
+            condition = ec.staleness_of(element)
 
     # generic wait block
     try:
@@ -2537,13 +2513,14 @@ def take_rotative_screenshot(browser, logfolder):
     """
     global next_screenshot
 
-    if next_screenshot == 1:
-        browser.save_screenshot("{}screenshot_1.png".format(logfolder))
-    elif next_screenshot == 2:
-        browser.save_screenshot("{}screenshot_2.png".format(logfolder))
-    else:
-        browser.save_screenshot("{}screenshot_3.png".format(logfolder))
-        next_screenshot = 0
+    match next_screenshot:
+        case 1:
+            browser.save_screenshot('{}screenshot_1.png'.format(logfolder))
+        case 2:
+            browser.save_screenshot('{}screenshot_2.png'.format(logfolder))
+        case _:
+            browser.save_screenshot('{}screenshot_3.png'.format(logfolder))
+            next_screenshot = 0
         # sum +1 next
 
     # update next

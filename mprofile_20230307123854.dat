@@ -1,0 +1,2 @@
+CMDLINE /usr/bin/python3.11 -m pytest
+MEM 0.699219 1678189134.4413

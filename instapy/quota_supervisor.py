@@ -1,4 +1,4 @@
-""" Realtime and sophisticated quota supervising mechanisms """
+﻿""" Realtime and sophisticated quota supervising mechanisms """
 import time as epoch_time
 from datetime import time, timedelta, date, datetime
 import random
@@ -227,46 +227,17 @@ def send_message(job, action, interval, nap):
     """Send information messages about QS states"""
     job = job.replace("_", " ")
 
-    if action == "sleep":
-        if interval == "hourly":
-            quick_drink = random.choice(
-                [
-                    "lemon tea",
-                    "black tea",
-                    "green tea",
-                    "grey tea",
-                    "coffee mexicano",
-                    "coffee colombia",
-                    "fruit juice",
-                ]
-            )
-            message = (
-                "Quota Supervisor: hourly {} reached quotient!"
-                "\t~going to sleep {} minutes long\n\ttake a {} "
-                "break? :>".format(job, "%.0f" % (nap / 60), quick_drink)
-            )
-
-        elif interval == "daily":
-            message = (
-                "Quota Supervisor: daily {} reached quotient!"
-                "\t~going to sleep {} hours long\n"
-                "\ttime for InstaPy to take a big good nap :-)".format(
-                    job, "%.1f" % (nap / 60 / 60)
-                )
-            )
-
-    elif action == "exit":
-        message = (
-            "Quota Supervisor: {} {} reached quotient!"
-            "\t~exiting\n\tfor *non-stop botting use `sleep_after` "
-            "parameter on the go! ;)".format(interval, job)
-        )
-
-    elif action == "jump":
-        message = (
-            "Quota Supervisor: jumped a {} out of {} quotient!\t~be fair "
-            "with numbers :]\n".format(job[:-1], interval)
-        )
+    match action:
+        case 'sleep':
+            if interval == 'hourly':
+                quick_drink = random.choice(['lemon tea', 'black tea', 'green tea', 'grey tea', 'coffee mexicano', 'coffee colombia', 'fruit juice'])
+                message = 'Quota Supervisor: hourly {} reached quotient!\t~going to sleep {} minutes long\n\ttake a {} break? :>'.format(job, '%.0f' % (nap / 60), quick_drink)
+            elif interval == 'daily':
+                message = 'Quota Supervisor: daily {} reached quotient!\t~going to sleep {} hours long\n\ttime for InstaPy to take a big good nap :-)'.format(job, '%.1f' % (nap / 60 / 60))
+        case 'exit':
+            message = 'Quota Supervisor: {} {} reached quotient!\t~exiting\n\tfor *non-stop botting use `sleep_after` parameter on the go! ;)'.format(interval, job)
+        case 'jump':
+            message = 'Quota Supervisor: jumped a {} out of {} quotient!\t~be fair with numbers :]\n'.format(job[:-1], interval)
 
     logger.info(message)
 

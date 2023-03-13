@@ -1,0 +1,34 @@
+﻿*** /home/molnar/Downloads/unittests1/projects/transformed-InstaPy/instapy/file_manager.py
+--- /home/molnar/Downloads/unittests1/projects/transformed-InstaPy/instapy/file_manager.py
+***************
+*** 139,153 ****
+  def slashen(path, direction="forward"):
+      """Replace backslashes in paths with forward slashes"""
+  
+!     if direction == "forward":
+!         path = path.replace("\\", "/")
+! 
+!     elif direction == "backwards":
+!         path = path.replace("/", "\\")
+! 
+!     elif direction == "native":
+!         path = path.replace("/", str(native_slash))
+!         path = path.replace("\\", str(native_slash))
+  
+      return path
+  
+--- 139,152 ----
+  def slashen(path, direction="forward"):
+      """Replace backslashes in paths with forward slashes"""
+  
+!     match direction:
+!         case 'forward':
+!             path = path.replace('\\', '/')
+!         case 'backwards':
+!             path = path.replace('/', '\\')
+!         case 'native':
+!             path = path.replace('/', str(native_slash))
+!             path = path.replace('\\', str(native_slash))
+  
+      return path
+  

@@ -1,4 +1,4 @@
-""" Module which handles the follow features like unfollowing and following """
+﻿""" Module which handles the follow features like unfollowing and following """
 # import built-in & third-party modules
 import csv
 import json
@@ -84,24 +84,24 @@ def set_automated_followed_pool(
                 #    user,   # oldest
                 #    datetime ~ user,   # after `unfollow_after` was introduced
                 #    datetime ~ user ~ user_id,   # after `user_id` was added
-                if sz == 1:
-                    time_stamp = None
-                    user = entries[0]
-
-                elif sz == 2:
-                    time_stamp = entries[0]
-                    user = entries[1]
-
-                elif sz == 3:
-                    time_stamp = entries[0]
-                    user = entries[1]
-                    user_id = entries[2]
-
-                elif sz == 4:
-                    time_stamp = entries[0]
-                    user = entries[1]
-                    user_id = entries[2]
-                    followedback = True if entries[3] == "true" else None
+                # PRESERVED COMMENTS: 
+                 #    datetime ~ user ~ user_id,   # after `user_id` was added
+                match sz:
+                    case 1:
+                        time_stamp = None
+                        user = entries[0]
+                    case 2:
+                        time_stamp = entries[0]
+                        user = entries[1]
+                    case 3:
+                        time_stamp = entries[0]
+                        user = entries[1]
+                        user_id = entries[2]
+                    case 4:
+                        time_stamp = entries[0]
+                        user = entries[1]
+                        user_id = entries[2]
+                        followedback = True if entries[3] == 'true' else None
 
                 automatedFollowedPool["all"].update(
                     {
@@ -573,15 +573,13 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
             return False, "already followed"
 
         elif following_status in ["Unblock", "UNAVAILABLE"]:
-            if following_status == "Unblock":
-                failure_msg = "user is in block"
-
-            elif following_status == "UNAVAILABLE":
-                failure_msg = "user is inaccessible"
-
-            else:
-                # Trace the current status
-                failure_msg = following_status
+            match following_status:
+                case 'Unblock':
+                    failure_msg = 'user is in block'
+                case 'UNAVAILABLE':
+                    failure_msg = 'user is inaccessible'
+                case _:
+                    failure_msg = following_status
 
             logger.warning(
                 "--> Couldn't follow '{}'!\t~{}".format(user_name, failure_msg)
@@ -1352,15 +1350,13 @@ def unfollow_user(
             return False, "already unfollowed"
 
         elif following_status in ["Unblock", "UNAVAILABLE"]:
-            if following_status == "Unblock":
-                failure_msg = "user is in block"
-
-            elif following_status == "UNAVAILABLE":
-                failure_msg = "user is inaccessible"
-
-            else:
-                # Trace the current status
-                failure_msg = following_status
+            match following_status:
+                case 'Unblock':
+                    failure_msg = 'user is in block'
+                case 'UNAVAILABLE':
+                    failure_msg = 'user is inaccessible'
+                case _:
+                    failure_msg = following_status
 
             logger.warning(
                 "--> Couldn't unfollow '{}'!\t~{}".format(person, failure_msg)

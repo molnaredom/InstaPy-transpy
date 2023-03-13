@@ -1,4 +1,4 @@
-""" A file management utility """
+﻿""" A file management utility """
 
 import os
 from os.path import expanduser
@@ -139,15 +139,14 @@ def get_home_path():
 def slashen(path, direction="forward"):
     """Replace backslashes in paths with forward slashes"""
 
-    if direction == "forward":
-        path = path.replace("\\", "/")
-
-    elif direction == "backwards":
-        path = path.replace("/", "\\")
-
-    elif direction == "native":
-        path = path.replace("/", str(native_slash))
-        path = path.replace("\\", str(native_slash))
+    match direction:
+        case 'forward':
+            path = path.replace('\\', '/')
+        case 'backwards':
+            path = path.replace('/', '\\')
+        case 'native':
+            path = path.replace('/', str(native_slash))
+            path = path.replace('\\', str(native_slash))
 
     return path
 

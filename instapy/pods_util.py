@@ -1,4 +1,4 @@
-# import built-in & third-party modules
+﻿# import built-in & third-party modules
 import requests
 import sqlite3
 
@@ -10,18 +10,19 @@ from .database_engine import get_database
 
 
 def get_server_endpoint(topic):
-    if topic == "fashion":
-        return Settings.pods_fashion_server_endpoint
-    elif topic == "food":
-        return Settings.pods_food_server_endpoint
-    elif topic == "travel":
-        return Settings.pods_travel_server_endpoint
-    elif topic == "sports":
-        return Settings.pods_sports_server_endpoint
-    elif topic == "entertainment":
-        return Settings.pods_entertainment_server_endpoint
-    else:
-        return Settings.pods_server_endpoint
+    match topic:
+        case 'fashion':
+            return Settings.pods_fashion_server_endpoint
+        case 'food':
+            return Settings.pods_food_server_endpoint
+        case 'travel':
+            return Settings.pods_travel_server_endpoint
+        case 'sports':
+            return Settings.pods_sports_server_endpoint
+        case 'entertainment':
+            return Settings.pods_entertainment_server_endpoint
+        case _:
+            return Settings.pods_server_endpoint
 
 
 def get_recent_posts_from_pods(topic, logger):
@@ -48,14 +49,15 @@ def group_posts(posts, logger):
     heavy_post_ids = []
     for postobj in posts:
         try:
-            if postobj["mode"] == "no_comments":
-                no_comments_post_ids.append(postobj)
-            elif postobj["mode"] == "light":
-                light_post_ids.append(postobj)
-            elif postobj["mode"] == "heavy":
-                heavy_post_ids.append(postobj)
-            else:
-                normal_post_ids.append(postobj)
+            match postobj['mode']:
+                case 'no_comments':
+                    no_comments_post_ids.append(postobj)
+                case 'light':
+                    light_post_ids.append(postobj)
+                case 'heavy':
+                    heavy_post_ids.append(postobj)
+                case _:
+                    normal_post_ids.append(postobj)
         except Exception as err:
             logger.error(
                 "Failed with Error {}, please upgrade your instapy".format(err)
